@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# Mini-batch gradient descent algorithm.
+# Gradient descent with momentum algorithm.
 
 import time
 import numpy as np
@@ -9,7 +9,7 @@ from sklearn.datasets.samples_generator import make_regression
 import matplotlib.pyplot as plt
 from scipy import stats
 
-def mini_batch_gradient_descent(alpha, beta, x, y, ep=0.0001, batch_size=30, max_iter=10000):
+def gradient_descent_momentum(alpha, beta, x, y, ep=0.0001, max_iter=10000):
     converged = False
     k = 0 # Iterations counter.
     iterations = []
@@ -17,7 +17,7 @@ def mini_batch_gradient_descent(alpha, beta, x, y, ep=0.0001, batch_size=30, max
     m = len(x) # number of samples
 
     # initial theta
-    a_est = 6.5
+    a_est = 2.5
     b_est = 1.6
     f_est = 1.4
     v_a = 0
@@ -55,8 +55,6 @@ def mini_batch_gradient_descent(alpha, beta, x, y, ep=0.0001, batch_size=30, max
         b_est = b_est - v_b
         f_est = f_est - v_f
 
-        #plt.plot(b_est, f_est)
-
         plt.scatter(b_est, f_est, s=1, c='r')
         #plt.show()
         #plt.pause(0.0001)
@@ -88,24 +86,23 @@ if __name__ == '__main__':
     y = a*exp(-x/b)*cos(2*pi*f*x)
 
     # Random noise.
-    noise = 0.5*np.random.randn(len(x))
+    noise = 0.7*np.random.randn(len(x))
     y_n = y + noise
 
     # Descent gradient parameters.
-    batch_size = 60
     alpha = 0.004 # learning rate
     beta = 0.93
-    ep = 0.0002 # convergence criteria
+    ep = 0.0001 # convergence criteria
 
     # Call gradient descent, get: a, tau, f
     start_time = time.time()
-    a_est, b_est, f_est, iterations, J = mini_batch_gradient_descent(alpha, beta, x, y_n, ep, batch_size, max_iter=1000)
+    a_est, b_est, f_est, iterations, J = gradient_descent_momentum(alpha, beta, x, y_n, ep, max_iter=1000)
     end_time = time.time()
-    print("Algorithm execution time: %s s" % (end_time - start_time))
-    print("Average time per iteration: %s ms" % (1000*(end_time - start_time)/iterations[-1]))
+    print("Algorithm execution time: %s s" % (np.round(end_time - start_time,2)))
+    print("Average time per iteration: %s ms" % (np.round(1000*(end_time - start_time)/iterations[-1],2)))
     print("a = %s b = %s f = %s" % (a, b, f))
-    print("a_est = %s b_est = %s f_est = %s" % (np.round(a_est,3), np.round(b_est,3), np.round(f_est,3)))
-    print("Cost function J: %s" % (np.round(J[-1],3)))
+    print("a_est = %s b_est = %s f_est = %s" % (np.round(a_est,2), np.round(b_est,2), np.round(f_est,2)))
+    print("Cost function J: %s" % (np.round(J[-1],2)))
 
     y_est = a_est*exp(-x/b_est)*cos(2*pi*f_est*x)
 
